@@ -7,9 +7,22 @@ matplotlib.use("TkAgg")
 matplotlib.rcParams['font.sans-serif'] = ['Microsoft JhengHei']
 matplotlib.rcParams['axes.unicode_minus'] = False
 
+# 設定最大顯示視窗大小
+MAX_WINDOW_WIDTH = 800
+MAX_WINDOW_HEIGHT = 600
+
 # 圖片載入
-original_img = cv2.imread("map.jpg")
-gray = cv2.cvtColor(original_img, cv2.COLOR_BGR2GRAY)
+original_img = cv2.imread("map2.jpg")
+original_height, original_width = original_img.shape[:2]
+
+# 計算縮放比例
+scale_width = MAX_WINDOW_WIDTH / original_width
+scale_height = MAX_WINDOW_HEIGHT / original_height
+scale = min(scale_width, scale_height, 1)  # 確保縮放比例不超過1（即不放大圖片）
+
+# 調整圖片大小
+resized_img = cv2.resize(original_img, (int(original_width * scale), int(original_height * scale)))
+gray = cv2.cvtColor(resized_img, cv2.COLOR_BGR2GRAY)
 
 # 圖片二值化（反轉，讓區塊內是黑、邊線是白）
 _, thresh = cv2.threshold(255 - gray, 127, 255, cv2.THRESH_BINARY)
@@ -27,7 +40,7 @@ print(f"台灣南北長（像素）: {taiwan_pixel_distance} px")
 print(f"固定比例尺: {scale_km_per_pixel:.6f} 公里/像素")
 
 # 儲存主圖與顯示圖
-display_img = original_img.copy()
+display_img = resized_img.copy()
 hover_index = -1  # 當前滑鼠指到哪個輪廓
 
 def on_mouse(event, x, y, flags, param):
@@ -48,7 +61,7 @@ def on_mouse(event, x, y, flags, param):
             mask = np.zeros(gray.shape, dtype=np.uint8)
             cv2.drawContours(mask, [contours[hover_index]], -1, 255, thickness=-1)
 
-            selected = cv2.bitwise_and(original_img, original_img, mask=mask)
+            selected = cv2.bitwise_and(resized_img, resized_img, mask=mask)
             cv2.imshow("Selected Area", selected)
 
             # 繪製積分圖
@@ -56,7 +69,7 @@ def on_mouse(event, x, y, flags, param):
 
     elif event == cv2.EVENT_RBUTTONDOWN:
         hover_index = -1
-        display_img = original_img.copy()
+        display_img = resized_img.copy()
 
 def draw_integration_figures(mask):
     import matplotlib.pyplot as plt
@@ -66,7 +79,7 @@ def draw_integration_figures(mask):
     y0, y1 = np.min(ys), np.max(ys)
     x0, x1 = np.min(xs), np.max(xs)
     region_mask = mask[y0:y1+1, x0:x1+1]
-    region_img = original_img[y0:y1+1, x0:x1+1].copy()
+    region_img = resized_img[y0:y1+1, x0:x1+1].copy()
     h, w = region_mask.shape
 
     # 蒙特卡洛法
@@ -98,7 +111,7 @@ def draw_integration_figures(mask):
     cv2.drawContours(monte_img, contours, -1, (0, 255, 0), 1)  # 綠色邊界
 
     # 顯示（僅蒙特卡洛法，調整圖像大小和標題）
-    fig, ax = plt.subplots(figsize=(8, 8))  # 縮小圖像大小
+    fig, ax = plt.subplots(figsize=(7, 7))  # 縮小圖像大小
     ax.imshow(cv2.cvtColor(monte_img, cv2.COLOR_BGR2RGB))
     ax.set_title(
         f"蒙特卡洛法積分={monte_area_km2:.2f} km²\n真實面積={region_area_km2:.2f} km²\n固定比例尺: {scale_km_per_pixel:.6f} 公里/像素",
@@ -116,7 +129,7 @@ while True:
     if cv2.getWindowProperty("Map", cv2.WND_PROP_VISIBLE) < 1:
         break
 
-    temp = original_img.copy()
+    temp = resized_img.copy()
     if hover_index != -1:
         cv2.drawContours(temp, [contours[hover_index]], -1, (0, 0, 255), 2)
 
