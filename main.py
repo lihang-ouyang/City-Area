@@ -3,9 +3,7 @@ import numpy as np
 import matplotlib
 
 matplotlib.use("TkAgg")
-
 matplotlib.rcParams['font.sans-serif'] = ['Microsoft JhengHei']
-matplotlib.rcParams['axes.unicode_minus'] = False
 
 # 設定最大顯示視窗大小
 MAX_WINDOW_WIDTH = 800
@@ -101,10 +99,10 @@ def draw_integration_figures(mask):
         x = rng.integers(0, w)
         y = rng.integers(0, h)
         if region_mask[y, x] > 0:
-            monte_img[y, x] = [255, 0, 0]  # 紅色點（區域內）
+            monte_img[y, x] = [255, 0, 0]  # 藍色點（區域內）
             in_cnt += 1
         else:
-            monte_img[y, x] = [0, 128, 255]  # 藍色點（區域外）
+            monte_img[y, x] = [0, 0, 255]  # 紅色點（區域外）
 
     monte_area_km2 = in_cnt / N * area * (scale_km_per_pixel ** 2)
     contours, _ = cv2.findContours(region_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
@@ -137,7 +135,5 @@ while True:
     key = cv2.waitKey(20)
     if key == 27:
         break
-    elif key == ord('r'):
-        hover_index = -1
 
 cv2.destroyAllWindows()
