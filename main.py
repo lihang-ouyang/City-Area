@@ -39,8 +39,9 @@ print(f"固定比例尺: {scale_km_per_pixel:.6f} 公里/像素")
 
 # 儲存主圖與顯示圖
 display_img = resized_img.copy()
-hover_index = -1  # 當前滑鼠指到哪個輪廓
+hover_index = -1
 
+# 當前滑鼠指到哪個輪廓
 def on_mouse(event, x, y, flags, param):
     global hover_index, display_img
 
