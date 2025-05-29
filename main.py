@@ -81,7 +81,7 @@ def draw_integration_figures(mask):
     region_img = resized_img[y0:y1+1, x0:x1+1].copy()
     h, w = region_mask.shape
 
-    # 蒙特卡洛法
+    # 蒙地卡羅法
     monte_img = region_img.copy()
     area = w * h  # 總範圍面積
     region_area_px2 = np.sum(region_mask > 0)  # 真實區域面積（像素）
@@ -113,7 +113,7 @@ def draw_integration_figures(mask):
     fig, ax = plt.subplots(figsize=(7, 7))  # 縮小圖像大小
     ax.imshow(cv2.cvtColor(monte_img, cv2.COLOR_BGR2RGB))
     ax.set_title(
-        f"蒙特卡洛法積分={monte_area_km2:.2f} km²\n真實面積={region_area_km2:.2f} km²\n固定比例尺: {scale_km_per_pixel:.6f} 公里/像素",
+        f"蒙地卡羅法積分={monte_area_km2:.2f} km²\n真實面積={region_area_km2:.2f} km²\n固定比例尺: {scale_km_per_pixel:.6f} 公里/像素",
         fontsize=12
     )
     ax.axis("off")
