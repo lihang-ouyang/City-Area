@@ -39,6 +39,7 @@ pip install opencv-python numpy matplotlib
    ```bash
    python <your_script_name>.py
    ```
+   - **執行檔下載**：https://github.com/lihang-ouyang/City-Area/tree/master/dist
 
 3. **操作方式**  
    - **滑鼠移動**：高亮顯示游標下的地圖區塊。
